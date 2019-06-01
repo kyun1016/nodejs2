@@ -39,8 +39,6 @@ var app = http.createServer(function(request,response){
     var pathname = url.parse(_url, true).pathname;
     //가독성을 높이기 위해서 title로 묶어주었다.
     var title = queryData.id;
-
-
     console.log(queryData.id);
     console.log(url.parse(_url, true));
 

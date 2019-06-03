@@ -4,33 +4,39 @@ var fs = require('fs');
 //참고, nodejs url parse query string
 var url = require('url');
 
-function templateHTML(title, list, body, control){
-  return  `
-  <!doctype html>
-  <html>
-  <head>
-    <title>WEB1 - ${title}</title>
-    <meta charset="utf-8">
-  </head>
-  <body>
-    <h1><a href="/">WEB</a></h1>
-    ${list}
-    ${control}
-    ${body}
-  </body>
-  </html>
-  `;
-}
+var template = {
+  HTML:function(title, list, body, control){
+    return  `
+    <!doctype html>
+    <html>
+    <head>
+      <title>WEB1 - ${title}</title>
+      <meta charset="utf-8">
+    </head>
+    <body>
+      <h1><a href="/">WEB</a></h1>
+      ${list}
+      ${control}
+      ${body}
+    </body>
+    </html>
+    `;
+  },
 
-function templateList(fileList){
-  var list = '<ul>';
-  for(var i=0;i<fileList.length;i++){
-    list = list + `<li><a href="/?id=${fileList[i]}">${fileList[i]}</a></li>`;
+  list:function(fileList){
+    var list = '<ul>';
+    for(var i=0;i<fileList.length;i++){
+      list = list + `<li><a href="/?id=${fileList[i]}">${fileList[i]}</a></li>`;
+    }
+
+    list = list + '</ul>';
+    return list;
   }
 
-  list = list + '</ul>';
-  return list;
 }
+
+
+
 
 
 var app = http.createServer(function(request,response){
@@ -53,10 +59,10 @@ var app = http.createServer(function(request,response){
       var description = 'Hello, Node.js';
       fs.readdir('./data',(err, fileList)=>{
         //함수를 활용해 코드의 반복을 줄인다.
-        var list = templateList(fileList);
-        var template = templateHTML(title, list, `<h2>${title}</h2>${description}`, `<a href="/post">post</a>`);
+        var list = template.list(fileList);
+        var html = template.HTML(title, list, `<h2>${title}</h2>${description}`, `<a href="/post">post</a>`);
         response.writeHead(200);
-        response.end(template);
+        response.end(html);
       });
 
     } else{
@@ -64,8 +70,8 @@ var app = http.createServer(function(request,response){
           //if(err) throw err;
           //템플릿을 활용해 문서를 처리하였다.
           fs.readdir('./data',(err, fileList)=>{
-            var list = templateList(fileList);
-            var template = templateHTML(title, list, `<h2>${title}</h2>${description}`,`<a href="/post">post</a>
+            var list = template.list(fileList);
+            var html = template.HTML(title, list, `<h2>${title}</h2>${description}`,`<a href="/post">post</a>
             <a href="/update?id=${title}">update</a>
             <form action="/delete_process" method="post">
               <input type="hidden" name="id" value=${title}>
@@ -73,7 +79,7 @@ var app = http.createServer(function(request,response){
             </form>
             `);
             response.writeHead(200);
-            response.end(template);
+            response.end(html);
           });
         })
     }
@@ -82,8 +88,8 @@ var app = http.createServer(function(request,response){
     var title = 'WEB - post';
     fs.readdir('./data',(err, fileList)=>{
       //함수를 활용해 코드의 반복을 줄인다.
-      var list = templateList(fileList);
-      var template = templateHTML(title, list, `
+      var list = template.list(fileList);
+      var html = template.HTML(title, list, `
         <form action="/post_process" method="post">
           <p><input type="text" name="title" placeholder ="title"></p>
           <p>
@@ -95,7 +101,7 @@ var app = http.createServer(function(request,response){
         </form>
         `,' ');
       response.writeHead(200);
-      response.end(template);
+      response.end(html);
     });
   }
   else if(pathname === '/post_process'){
@@ -130,8 +136,8 @@ var app = http.createServer(function(request,response){
       //if(err) throw err;
       //템플릿을 활용해 문서를 처리하였다.
       fs.readdir('./data',(err, fileList)=>{
-        var list = templateList(fileList);
-        var template = templateHTML(title, list, `<form action="/update_process" method="post">
+        var list = template.list(fileList);
+        var html = template.HTML(title, list, `<form action="/update_process" method="post">
         <input type="hidden" name="id" value="${title}">
           <p><input type="text" name="title" placeholder ="title" value="${title}"></p>
           <p>
@@ -142,7 +148,7 @@ var app = http.createServer(function(request,response){
           </p>
         </form>`, ' ');
         response.writeHead(200);
-        response.end(template);
+        response.end(html);
       });
     })
   }

@@ -21,6 +21,14 @@ var app = http.createServer(function(request,response){
     if(title == undefined){
       title = 'Welcome';
       var description = 'Hello, Node.js';
+      var contents = fs.readFileSync("data.json");
+      var jsonContent = JSON.parse(contents);
+      console.log(jsonContent);
+      console.log(jsonContent.phoneNumber);
+      //var list = template.list(jsonContent.person);
+      //var html = template.HTML(title, list, `<h2>${title}</h2>${description}`, `<a href="/post">post</a>`);
+      //response.writeHead(200);
+      //response.end(html);
       fs.readdir('./data',(err, fileList)=>{
         //함수를 활용해 코드의 반복을 줄인다.
         var list = template.list(fileList);

@@ -109,9 +109,15 @@ var app = http.createServer(function(request,response){
       console.log(post);
       console.log(post.title);
       console.log(post.description);
+
+      fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
+        if (err) throw err;
+        // response.writeHead(200);
+        // response.end(`save to ${title}`);
+        response.writeHead(302, {Location: `/?id=${title}`});
+        response.end();
+      });
     });
-    response.writeHead(200);
-    response.end('success');
   }
 
   else {

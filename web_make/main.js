@@ -29,7 +29,8 @@ var app = http.createServer(function(request,response){
         response.end(html);
       });
 
-    } else{
+    }
+    else{
         fs.readFile(`data/${title}`, 'utf8', (err, description) => {
           //if(err) throw err;
           //템플릿을 활용해 문서를 처리하였다.

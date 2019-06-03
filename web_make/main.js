@@ -1,43 +1,7 @@
 var http = require('http');
 var fs = require('fs');
-//동적인 활용을 위한 선언
-//참고, nodejs url parse query string
 var url = require('url');
-
-var template = {
-  HTML:function(title, list, body, control){
-    return  `
-    <!doctype html>
-    <html>
-    <head>
-      <title>WEB1 - ${title}</title>
-      <meta charset="utf-8">
-    </head>
-    <body>
-      <h1><a href="/">WEB</a></h1>
-      ${list}
-      ${control}
-      ${body}
-    </body>
-    </html>
-    `;
-  },
-
-  list:function(fileList){
-    var list = '<ul>';
-    for(var i=0;i<fileList.length;i++){
-      list = list + `<li><a href="/?id=${fileList[i]}">${fileList[i]}</a></li>`;
-    }
-
-    list = list + '</ul>';
-    return list;
-  }
-
-}
-
-
-
-
+var template = require('./lib/template.js');
 
 var app = http.createServer(function(request,response){
   var _url = request.url;

@@ -4,7 +4,7 @@ var fs = require('fs');
 //참고, nodejs url parse query string
 var url = require('url');
 
-function templateHTML(title, list, body){
+function templateHTML(title, list, body, control){
   return  `
   <!doctype html>
   <html>
@@ -15,7 +15,7 @@ function templateHTML(title, list, body){
   <body>
     <h1><a href="/">WEB</a></h1>
     ${list}
-    <a href="/create">create</a>
+    ${control}
     ${body}
   </body>
   </html>
@@ -54,7 +54,7 @@ var app = http.createServer(function(request,response){
       fs.readdir('./data',(err, fileList)=>{
         //함수를 활용해 코드의 반복을 줄인다.
         var list = templateList(fileList);
-        var template = templateHTML(title, list, `<h2>${title}</h2>${description}`);
+        var template = templateHTML(title, list, `<h2>${title}</h2>${description}`, `<a href="/post">post</a>`);
         response.writeHead(200);
         response.end(template);
       });
@@ -65,20 +65,26 @@ var app = http.createServer(function(request,response){
           //템플릿을 활용해 문서를 처리하였다.
           fs.readdir('./data',(err, fileList)=>{
             var list = templateList(fileList);
-            var template = templateHTML(title, list, `<h2>${title}</h2>${description}`);
+            var template = templateHTML(title, list, `<h2>${title}</h2>${description}`,`<a href="/post">post</a>
+            <a href="/update?id=${title}">update</a>
+            <form action="/delete_process" method="post">
+              <input type="hidden" name="id" value=${title}>
+              <input type="submit">
+            </form>
+            `);
             response.writeHead(200);
             response.end(template);
           });
         })
     }
   }
-  else if(pathname === '/create'){
-    title = 'WEB - create';
+  else if(pathname === '/post'){
+    var title = 'WEB - post';
     fs.readdir('./data',(err, fileList)=>{
       //함수를 활용해 코드의 반복을 줄인다.
       var list = templateList(fileList);
       var template = templateHTML(title, list, `
-        <form action="http://localhost:3000/create_process" method="post">
+        <form action="/post_process" method="post">
           <p><input type="text" name="title" placeholder ="title"></p>
           <p>
             <textarea name="description" rows="8" cols="80" placeholder="description"></textarea>
@@ -87,12 +93,12 @@ var app = http.createServer(function(request,response){
             <input type="submit">
           </p>
         </form>
-        `);
+        `,' ');
       response.writeHead(200);
       response.end(template);
     });
   }
-  else if(pathname === '/create_process'){
+  else if(pathname === '/post_process'){
     var body = '';
     request.on('data', function(data){
       body += data;
@@ -110,7 +116,7 @@ var app = http.createServer(function(request,response){
       console.log(post.title);
       console.log(post.description);
 
-      fs.writeFile(`data/${title}`, description, 'utf8', (err) => {
+      fs.writeFile(`./data/${title}`, description, 'utf8', (err) => {
         if (err) throw err;
         // response.writeHead(200);
         // response.end(`save to ${title}`);
@@ -119,7 +125,66 @@ var app = http.createServer(function(request,response){
       });
     });
   }
+  else if(pathname === '/update'){
+    fs.readFile(`data/${title}`, 'utf8', (err, description) => {
+      //if(err) throw err;
+      //템플릿을 활용해 문서를 처리하였다.
+      fs.readdir('./data',(err, fileList)=>{
+        var list = templateList(fileList);
+        var template = templateHTML(title, list, `<form action="/update_process" method="post">
+        <input type="hidden" name="id" value="${title}">
+          <p><input type="text" name="title" placeholder ="title" value="${title}"></p>
+          <p>
+            <textarea name="description" rows="8" cols="80" placeholder="description">${description}</textarea>
+          </p>
+          <p>
+            <input type="submit">
+          </p>
+        </form>`, ' ');
+        response.writeHead(200);
+        response.end(template);
+      });
+    })
+  }
+  else if(pathname === '/update_process'){
+    var body = '';
+    request.on('data', function(data){
+      body += data;
+    });
+    request.on('end', function(){
+      var post = qs.parse(body);
+      var title = post.title;
+      var id = post.id;
+      var description = post.description;
+      console.log(post);
+      console.log(post.title);
+      console.log(post.id);
+      console.log(post.description);
 
+      fs.rename(`./data/${id}`, `./data/${title}`, (err) => {
+        fs.writeFile(`./data/${title}`, description, 'utf8', (err) => {
+          if (err) throw err;
+          response.writeHead(302, {Location: `/?id=${title}`});
+          response.end();
+        });
+      });
+    });
+  }
+  else if(pathname === '/delete_process'){
+    var body = '';
+    request.on('data', function(data){
+      body += data;
+    });
+    request.on('end', function(){
+      var post = qs.parse(body);
+      var id = post.id;
+      fs.unlink(`./data/${id}`, (err) => {
+        if(err) throw err;
+        response.writeHead(302, {Location: `/?id=${id}`});
+        response.end();
+      });
+    });
+  }
   else {
       response.writeHead(404);
       response.end('Not found');

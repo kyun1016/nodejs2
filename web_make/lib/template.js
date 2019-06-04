@@ -25,6 +25,17 @@ module.exports = {
 
     list = list + '</ul>';
     return list;
-  }
+  },
+
+  JSONList:function(jsonContent){
+    var list = '<ul>';
+    for(var i=0;i<Object.keys(jsonContent.person).length;i++){
+      // var string = JSON.stringify(jsonContent.person[i]);
+      console.log(jsonContent.person[i].owner);
+      list = list + `<li><a href="/">${jsonContent.person[i].owner}</a></li>`;
+    }
+    list = list + '</ul>';
+    return list;
+  },
 
 }

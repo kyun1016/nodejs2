@@ -16,30 +16,43 @@ var app = http.createServer(function(request,response){
   var qs = require('querystring');
   console.log(queryData.id);
   console.log(url.parse(_url, true));
-
+  var description = 'Hello, Node.js';
+  var contents = fs.readFileSync("./data/data.json");
+  var jsonContent = JSON.parse(contents);
+  console.log(jsonContent.person[0].owner);
+  console.log(jsonContent.person[0]);
+  console.log(Object.keys(jsonContent.person).length);
 
   //처음 메인화면
   if(pathname === '/')
   {
     if(title == undefined){
       title = 'Welcome';
-      var description = 'Hello, Node.js';
-      // var contents = fs.readFileSync("data.json");
-      // var jsonContent = JSON.parse(contents);
-      // console.log(jsonContent);
-      // console.log(jsonContent.phoneNumber);
-      //var list = template.list(jsonContent.person);
-      //var html = template.HTML(title, list, `<h2>${title}</h2>${description}`, `<a href="/post">post</a>`);
-      //response.writeHead(200);
-      //response.end(html);
-      //data폴더의 항목을 읽어 목록으로 만든다.
-      fs.readdir('./data',(err, fileList)=>{
-        //함수를 활용해 코드의 반복을 줄인다.
-        var list = template.list(fileList);
-        var html = template.HTML(title, list, `<h2>${title}</h2>${description}`, `<a href="/post">post</a>`);
-        response.writeHead(200);
-        response.end(html);
-      });
+
+      // var list = template.JSONList(jsonContent.person);
+
+      var list = '<ol>';
+      for(var i=0;i<Object.keys(jsonContent.person).length;i++){
+        // var string = JSON.stringify(jsonContent.person[i]);
+        console.log(jsonContent.person[i].owner);
+        list = list + `<li><a href="/?id=${i+1}">${jsonContent.person[i].owner}</a></li>`;
+      }
+      list = list + '</ol>';
+
+      var html = template.HTML(title, list, `<h2>${title}</h2>${description}`, `<a href="/post">post</a>`);
+      response.writeHead(200);
+      response.end(html);
+
+
+
+      // //data폴더의 항목을 읽어 목록으로 만든다.(default)
+      // fs.readdir('./data',(err, fileList)=>{
+      //   //함수를 활용해 코드의 반복을 줄인다.
+      //   var list = template.list(fileList);
+      //   var html = template.HTML(title, list, `<h2>${title}</h2>${description}`, `<a href="/post">post</a>`);
+      //   response.writeHead(200);
+      //   response.end(html);
+      // });
 
     }
     else{

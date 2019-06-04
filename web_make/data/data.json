@@ -1,0 +1,19 @@
+{
+  "person":[
+    {
+      "phoneNumber":"01090117446",
+      "owner":"park seung kyun",
+      "corporation":"skt"
+    },
+    {
+      "phoneNumber":"01011111111",
+      "owner":"im one",
+      "corporation":"kt"
+    },
+    {
+      "phoneNumber":"01022222222",
+      "owner":"'im two",
+      "corporation":"u+"
+    }
+  ]
+}

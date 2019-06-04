@@ -18,20 +18,21 @@ var app = http.createServer(function(request,response){
   console.log(url.parse(_url, true));
 
 
-
+  //처음 메인화면
   if(pathname === '/')
   {
     if(title == undefined){
       title = 'Welcome';
       var description = 'Hello, Node.js';
-      var contents = fs.readFileSync("data.json");
-      var jsonContent = JSON.parse(contents);
-      console.log(jsonContent);
-      console.log(jsonContent.phoneNumber);
+      // var contents = fs.readFileSync("data.json");
+      // var jsonContent = JSON.parse(contents);
+      // console.log(jsonContent);
+      // console.log(jsonContent.phoneNumber);
       //var list = template.list(jsonContent.person);
       //var html = template.HTML(title, list, `<h2>${title}</h2>${description}`, `<a href="/post">post</a>`);
       //response.writeHead(200);
       //response.end(html);
+      //data폴더의 항목을 읽어 목록으로 만든다.
       fs.readdir('./data',(err, fileList)=>{
         //함수를 활용해 코드의 반복을 줄인다.
         var list = template.list(fileList);
@@ -60,6 +61,7 @@ var app = http.createServer(function(request,response){
         })
     }
   }
+  //post방식 구현
   else if(pathname === '/post'){
     var title = 'WEB - post';
     fs.readdir('./data',(err, fileList)=>{
@@ -104,6 +106,7 @@ var app = http.createServer(function(request,response){
       });
     });
   }
+  //update를 구현하자.
   else if(pathname === '/update'){
     fs.readFile(`data/${title}`, 'utf8', (err, description) => {
       //if(err) throw err;

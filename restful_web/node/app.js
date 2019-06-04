@@ -1,28 +1,48 @@
 
 var express = require('express');
 var app = express();
+var bodyParser = require('body-parser');
+var main = require('./router/main') ;
+
+
 app.listen(3000, function(){
   console.log("this line will be at the end");
 });
 
+
 //get방식의 요청을 처리한다.
+//data폴더 내의 정적인 파일들을 불러올 수 있도록 설정
+app.use(express.static('data'));
+//json형태의 입력을 받는다.
+app.use(bodyParser.json())
+//타입이 정해지지 않은 입력을 받는다.
+app.use(bodyParser.urlencoded({extended:true}))
+app.set('view engine', 'ejs');
+
+app.use('/main', main);
+
+//url routing
 app.get('/', function(req,res){
-  res.send("<h1>안녕하세요</h1>");
-  console.log(__dirname);
   res.sendFile( __dirname + '/data/main.html');
 });
 
-app.use(express.static('data'));
-
-//bodyParser을 이용해 post요청을 처리한다.
-var bodyParser = require('body-parser')
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({extended:true}))
+// app.get('/main', function(req,res){
+//   res.sendFile( __dirname + '/data/main.html');
+// });
 
 app.post('/email_post', function(req,res){
-  console.log(req.body)
-  res.send("welcome! " + req.body.email)
-})
+  //get : req.param('email')
+  console.log(req.body);
+  //res.send("welcome! " + req.body.email);
+  //출력을 할때 값을 조정해야 할 필요가 있을때, 이런식으로 전송한다.
+  res.render('email.ejs', {'email' : req.body.email});
+});
+
+app.post('/ajax_send_email', function(req, res){
+  console.log(req.body.email);
+  var responseData = {'resule' : 'ok', 'email' : req.body.email}
+  res.json(responseData);
+});
 
 
 const http = require('http');

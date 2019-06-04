@@ -3,6 +3,9 @@ var fs = require('fs');
 var url = require('url');
 var template = require('./lib/template.js');
 
+
+//나의 목표 : https://poiemaweb.com/js-rest-api
+
 var app = http.createServer(function(request,response){
   var _url = request.url;
   //동적인 접근을 하도록 설정해준다.
@@ -96,9 +99,6 @@ var app = http.createServer(function(request,response){
       console.log(post.description);
 
       fs.writeFile(`./data/${title}`, description, 'utf8', (err) => {
-        if (err) throw err;
-        // response.writeHead(200);
-        // response.end(`save to ${title}`);
         response.writeHead(302, {Location: `/?id=${title}`});
         response.end();
       });
@@ -142,7 +142,6 @@ var app = http.createServer(function(request,response){
 
       fs.rename(`./data/${id}`, `./data/${title}`, (err) => {
         fs.writeFile(`./data/${title}`, description, 'utf8', (err) => {
-          if (err) throw err;
           response.writeHead(302, {Location: `/?id=${title}`});
           response.end();
         });
@@ -158,8 +157,7 @@ var app = http.createServer(function(request,response){
       var post = qs.parse(body);
       var id = post.id;
       fs.unlink(`./data/${id}`, (err) => {
-        if(err) throw err;
-        response.writeHead(302, {Location: `/?id=${id}`});
+        response.writeHead(302, {Location: `/`});
         response.end();
       });
     });

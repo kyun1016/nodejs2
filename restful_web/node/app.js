@@ -3,6 +3,18 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var main = require('./router/main') ;
+// var mysql = require('mysql')
+//
+// // DATABASE SETTING
+// var connection = mysql.createConnection({
+// 	host : 'localhost',
+// 	port : 3306,
+// 	user : 'root',
+// 	password : 'asdf1234',
+// 	database : 'jsman'
+// })
+
+// connection.connect()
 
 
 app.listen(3000, function(){
@@ -23,24 +35,27 @@ app.use('/main', main);
 
 //url routing
 app.get('/', function(req,res){
-  res.sendFile( __dirname + '/data/main.html');
+  res.sendFile( __dirname + '/data/form.html');
 });
 
 // app.get('/main', function(req,res){
 //   res.sendFile( __dirname + '/data/main.html');
 // });
 
-app.post('/email_post', function(req,res){
+
+app.use('/main', main);
+
+app.post('/user_post', function(req,res){
   //get : req.param('email')
   console.log(req.body);
   //res.send("welcome! " + req.body.email);
   //출력을 할때 값을 조정해야 할 필요가 있을때, 이런식으로 전송한다.
-  res.render('email.ejs', {'email' : req.body.email});
+  res.render('email.ejs', {'phoneNumber' : req.body.phoneNumber});
 });
 
-app.post('/ajax_send_email', function(req, res){
-  console.log(req.body.email);
-  var responseData = {'resule' : 'ok', 'email' : req.body.email}
+app.post('/ajax_send_user', function(req, res){
+  console.log(req.body);
+  var responseData = {'resule' : 'ok', 'owner' : req.body.phoneNumber};
   res.json(responseData);
 });
 

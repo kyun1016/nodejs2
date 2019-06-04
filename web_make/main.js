@@ -56,23 +56,81 @@ var app = http.createServer(function(request,response){
 
     }
     else{
-        fs.readFile(`data/${title}`, 'utf8', (err, description) => {
-          //if(err) throw err;
-          //템플릿을 활용해 문서를 처리하였다.
-          fs.readdir('./data',(err, fileList)=>{
-            var list = template.list(fileList);
-            var html = template.HTML(title, list, `<h2>${title}</h2>${description}`,`<a href="/post">post</a>
-            <a href="/update?id=${title}">update</a>
-            <form action="/delete_process" method="post">
-              <input type="hidden" name="id" value=${title}>
-              <input type="submit">
-            </form>
-            `);
-            response.writeHead(200);
-            response.end(html);
-          });
-        })
+      title = jsonContent.person[title-1].owner
+      var list = '<ol>';
+      for(var i=0;i<Object.keys(jsonContent.person).length;i++){
+        // var string = JSON.stringify(jsonContent.person[i]);
+        console.log(jsonContent.person[i].owner);
+        list = list + `<li><a href="/?id=${i+1}">${jsonContent.person[i].owner}</a></li>`;
+      }
+      list = list + '</ol>';
+
+      var description = `
+      phoneNumber : ${jsonContent.person[1].phoneNumber}
+      owner : ${jsonContent.person[1].owner}
+      corporation : ${jsonContent.person[1].corporation}
+      `
+
+      var html = template.HTML(title, list, `<h2>${title}</h2>${description}`,`<a href="/post">post</a>
+      <a href="/update?id=${title}">update</a>
+      <form action="/delete_process" method="post">
+        <input type="hidden" name="id" value=${title}>
+        <input type="submit">
+      </form>
+      `);
+      response.writeHead(200);
+      response.end(html);
+
+
+
+
+      // title = jsonContent.person[title-1].owner
+      // var list = '<ol>';
+      // for(var i=0;i<Object.keys(jsonContent.person).length;i++){
+      //   // var string = JSON.stringify(jsonContent.person[i]);
+      //   console.log(jsonContent.person[i].owner);
+      //   list = list + `<li><a href="/?id=${i+1}">${jsonContent.person[i].owner}</a></li>`;
+      // }
+      // list = list + '</ol>';
+      //
+      // var description = `
+      // phoneNumber : ${jsonContent.person[1].phoneNumber}
+      // owner : ${jsonContent.person[1].owner}
+      // corporation : ${jsonContent.person[1].corporation}
+      // `
+      //
+      // var html = template.HTML(title, list, `<h2>${title}</h2>${description}`,`<a href="/post">post</a>
+      // <a href="/update?id=${title}">update</a>
+      // <form action="/delete_process" method="post">
+      //   <input type="hidden" name="id" value=${title}>
+      //   <input type="submit">
+      // </form>
+      // `);
+      // response.writeHead(200);
+      // response.end(html);
+
+
+        //default;
+        // fs.readFile(`data/${title}`, 'utf8', (err, description) => {
+        //   //if(err) throw err;
+        //   //템플릿을 활용해 문서를 처리하였다.
+        //   fs.readdir('./data',(err, fileList)=>{
+        //     var list = template.list(fileList);
+        //     var html = template.HTML(title, list, `<h2>${title}</h2>${description}`,`<a href="/post">post</a>
+        //     <a href="/update?id=${title}">update</a>
+        //     <form action="/delete_process" method="post">
+        //       <input type="hidden" name="id" value=${title}>
+        //       <input type="submit">
+        //     </form>
+        //     `);
+        //     response.writeHead(200);
+        //     response.end(html);
+        //   });
+        // })
     }
+  }
+  else if(pathname === '/get'){
+
   }
   //post방식 구현
   else if(pathname === '/post'){

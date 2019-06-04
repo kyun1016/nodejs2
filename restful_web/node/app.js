@@ -3,22 +3,16 @@ var express = require('express');
 var app = express();
 var bodyParser = require('body-parser');
 var main = require('./router/main') ;
-// var mysql = require('mysql')
-//
-// // DATABASE SETTING
-// var connection = mysql.createConnection({
-// 	host : 'localhost',
-// 	port : 3306,
-// 	user : 'root',
-// 	password : 'asdf1234',
-// 	database : 'jsman'
-// })
+var fs = require('fs');
+var contents = fs.readFileSync("./data/data.json");
+var jsonContent = JSON.parse(contents);
 
-// connection.connect()
-
+// console.log(jsonContent.person[0].owner);
+// console.log(jsonContent.person[0]);
+// console.log(Object.keys(jsonContent.person).length);
 
 app.listen(3000, function(){
-  console.log("this line will be at the end");
+  console.log("start, express server on port 3000");
 });
 
 
@@ -31,33 +25,62 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended:true}))
 app.set('view engine', 'ejs');
 
-app.use('/main', main);
 
 //url routing
+app.use('/main', main);
+
 app.get('/', function(req,res){
   res.sendFile( __dirname + '/data/form.html');
 });
 
-// app.get('/main', function(req,res){
-//   res.sendFile( __dirname + '/data/main.html');
-// });
+app.get('/get', function(req,res){
+  res.sendFile( __dirname + '/data/data.json');
+  console.log("start, express server on port 3000");
+});
 
+//순서대로 출력을 시키려고 하는데, 이 활용은 아닌가 보다....
+//더 찾아보자.
+app.get('/get/:id', function(req, res){
+  fs.readFile( __dirname + './data/data.json', 'utf8', function (err, data) {
+            // var users = JSON.parse(data);
+            console.log(req.param.id);
+            user = {"phoneNumber" : "123"};
+            res.json(user);
+       });
+});
 
-app.use('/main', main);
 
 app.post('/user_post', function(req,res){
   //get : req.param('email')
   console.log(req.body);
+
+  fs.writeFile(`./data/data.json`, description, 'utf8', (err) => {
+    response.writeHead(302, {Location: `/?id=${title}`});
+    response.end();
+  });
+
   //res.send("welcome! " + req.body.email);
   //출력을 할때 값을 조정해야 할 필요가 있을때, 이런식으로 전송한다.
+  //뷰 엔진 활용
   res.render('email.ejs', {'phoneNumber' : req.body.phoneNumber});
 });
 
 app.post('/ajax_send_user', function(req, res){
   console.log(req.body);
-  var responseData = {'resule' : 'ok', 'owner' : req.body.phoneNumber};
+  var responseData = {
+    'resule' : 'ok',
+    'phoneNumber' : req.body.phoneNumber,
+    'owner' : req.body.owner,
+    'corporation' : req.body.corporation
+  };
   res.json(responseData);
 });
+
+
+
+//delete관련 등등은 https://velopert.com/332 참고해서
+//app.get('/get/:id', function(req, res) 이렇게 id값을 가져오면 될 것 같은데...
+//생각해보니까, 파라미터값으로 주어지면 되나?
 
 
 const http = require('http');

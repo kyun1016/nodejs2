@@ -4,9 +4,6 @@ var app = express();
 app.listen(3000, function(){
   console.log("this line will be at the end");
 });
-for(var i=0;i<20;i++){
-  console.log("this is line number " + i);
-};
 
 //get방식의 요청을 처리한다.
 app.get('/', function(req,res){
